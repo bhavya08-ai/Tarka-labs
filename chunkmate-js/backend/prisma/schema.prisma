@@ -1,0 +1,41 @@
+// Define the database provider
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Document model
+model Document {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  chunks    Chunk[]
+  links     Reference[]
+}
+
+// Chunk model
+model Chunk {
+  id          String    @id @default(uuid())
+  documentId  String
+  number      Int
+  content     String
+  headings    String
+  createdAt   DateTime  @default(now())
+
+  document    Document  @relation(fields: [documentId], references: [id])
+}
+
+// Reference (Links) model
+model Reference {
+  id         String   @id @default(uuid())
+  documentId String
+  chunkId    String
+  url        String
+
+  document   Document @relation(fields: [documentId], references: [id])
+  chunk      Chunk    @relation(fields: [chunkId], references: [id])
+}
